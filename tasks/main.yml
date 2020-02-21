@@ -3,6 +3,8 @@
   file:
     state: directory
     path: "{{ mssql_backup_path }}"
+    owner: "{{ mssql_user }}"
+    group: "{{ mssql_group }}"
 
 - name: SETUP | Backup database job
   mssql_global_backup:

@@ -276,11 +276,8 @@ class BackupJob:
             file_path = "'%s/' + @name" % path
 
         file_name = "@name"
-        # file_name = "@name"
         if self.rotate == 0:
             file_name = "@name + '_' + @fileDate"
-            # file_name.append("'_' + @fileDate")
-            # sql_set_file_name = """{0} + '_' + @fileDate""".format(sql_set_file_name)
 
         # the \r makes it nicely formatted in the database
         return """

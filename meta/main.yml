@@ -1,6 +1,7 @@
 ---
 galaxy_info:
   author: David Lundgren
+  role_name: mssql_global_backup
   description: Creates mssql backup job
   license: MIT
   min_ansible_version: 2.0
