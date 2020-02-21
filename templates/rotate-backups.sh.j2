@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# Quick script to delete the X number of files older than a counter.
+#
+#
+cd "{{ mssql_backup_path }}"
+
+find . -maxdepth 1 -type d \( ! -name . \) | while read dir; do
+    cd "$dir"
+    ls -1t | tail -n +{{ mssql_backup_count }} | xargs rm -f
+    cd ..
+done

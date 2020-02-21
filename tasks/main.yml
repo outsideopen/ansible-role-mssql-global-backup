@@ -1,0 +1,35 @@
+---
+- name: SETUP | ensure backup directory exists
+  file:
+    state: directory
+    path: "{{ mssql_backup_path }}"
+
+- name: SETUP | Backup database job
+  mssql_global_backup:
+    name: "{{ mssql_backup_name | default('Backup Databases') }}"
+    path: "{{ mssql_backup_path }}"
+    rotate: "{{ mssql_backup_count | default(omit) }}"
+    schedule_type: "{{ mssql_schedule_type | default(omit) }}"
+    schedule_interval: "{{ mssql_schedule_interval | default(omit) }}"
+    schedule_start_time: "{{ mssql_schedule_start_time | default(omit) }}"
+    login_port: "{{ mssql_port | string }}"
+    login_name: "{{ mssql_admin_user }}"
+    login_password: "{{ mssql_admin_password }}"
+
+- name: SETUP | cron shell script
+  template:
+    src: rotate-backups.sh.j2
+    dest: "{{ mssql_home }}/rotate-backups.sh"
+    mode: "0755"
+    owner: "{{ mssql_user }}"
+    group: "{{ mssql_group }}"
+
+- name: SETUP | cron job
+  cron:
+    name: "Clean up SQL Server backups"
+    weekday: "{{ mssql_backup_ron_weekday | default(omit) }}"
+    minute: "{{ mssql_backup_cron_minute | default(omit) }}"
+    hour: "{{ mssql_backup_cron_hour | default(omit) }}"
+    month: "{{ mssql_backup_cron_month | default(omit) }}"
+    user: "{{ mssql_user }}"
+    job: "{{ mssql_home }}/rotate-backups.sh"

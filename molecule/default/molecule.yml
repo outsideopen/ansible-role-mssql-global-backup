@@ -1,0 +1,31 @@
+dependency:
+  name: galaxy
+  options:
+    role-file: molecule/galaxy.yml
+driver:
+  name: docker
+lint: ansible-lint
+platforms:
+  - name: "mssql-centos-latest"
+    image: "geerlingguy/docker-centos7-ansible:latest"
+    command: /sbin/init
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    pre_build_image: yes
+  - name: "mssql-ubuntu-latest"
+    image: "geerlingguy/docker-ubuntu1604-ansible:latest"
+    command: /sbin/init
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    pre_build_image: yes
+
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      stdout_callback: yaml
+      bin_ansible_callbacks: yes
+scenario:
+  name: default

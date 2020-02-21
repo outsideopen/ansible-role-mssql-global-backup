@@ -1,0 +1,29 @@
+---
+- name: Prepare
+  hosts: all
+  become: yes
+  roles:
+    - robertdebock.ca_certificates
+    - robertdebock.microsoft_repository_keys
+    - role: robertdebock.mssql
+      mssql_server_package: mssql-server
+      mssql_version: 2017
+      # necessary as the role hardcodes 2019
+      mssql_ubuntu_repositories:
+        - repo: https://packages.microsoft.com/ubuntu/16.04/prod
+        - repo: "https://packages.microsoft.com/ubuntu/16.04/mssql-server-{{ mssql_version }}"
+  pre_tasks:
+    - name: ensure https is available to apt
+      when:
+        - ansible_distribution in [ "Debian", "Ubuntu" ]
+      apt:
+        update_cache: yes
+        name: apt-transport-https
+        state: present
+
+    - name: Install cronie on centos
+      when:
+        - ansible_distribution in [ "CentOS", "RedHat", "Fedora" ]
+      package:
+        name: cronie
+        state: present

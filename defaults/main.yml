@@ -1,0 +1,22 @@
+---
+mssql_port: 1433
+mssql_admin_user: sa
+mssql_admin_password: "P@ssw0rd!"
+
+mssql_home: /var/opt/mssql
+mssql_user: mssql
+mssql_group: mssql
+
+mssql_backup_path: /var/opt/mssql/backups
+mssql_backup_count: 14
+
+# 12:00 am
+mssql_schedule_type: daily
+mssql_schedule_interval: 1
+mssql_schedule_start_time: '003000'
+
+# ~2 hours after the backup
+mssql_backup_cron_hour: '*'
+mssql_backup_cron_minute: '*'
+mssql_backup_cron_month: 2
+mssql_backup_cron_weekday: '*'

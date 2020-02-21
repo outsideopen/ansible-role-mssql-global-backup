@@ -1,0 +1,18 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    # robertdebock.mssql default
+    mssql_admin_password: "StR0nGp4ss."
+    # ansible-lint > 160 chars rule
+    __mssql_cmd: "/opt/mssql-tools/bin/sqlcmd -S 'localhost,{{ mssql_port }}' -U {{ mssql_admin_user }} "
+    __mssql_cmd2: "-P '{{ mssql_admin_password }}' -d msdb -b -s, -h-1 -Q "
+    __mssql_cmd3: "\"SET NOCOUNT ON; SELECT name FROM dbo.sysjobs WHERE name=N'Backup Databases'\""
+  roles:
+    - role: ansible-role-mssql-global-backup
+  post_tasks:
+    - name: Test that the backup job is set up
+      command: "{{ __mssql_cmd }} {{ __mssql_cmd2 }} {{ __mssql_cmd3 }}"
+      register: sql_cmd
+      changed_when: sql_cmd.rc == -1
