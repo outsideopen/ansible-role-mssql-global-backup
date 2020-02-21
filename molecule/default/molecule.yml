@@ -6,15 +6,8 @@ driver:
   name: docker
 lint: ansible-lint
 platforms:
-  - name: "mssql-centos-latest"
-    image: "geerlingguy/docker-centos7-ansible:latest"
-    command: /sbin/init
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: yes
-    pre_build_image: yes
-  - name: "mssql-ubuntu-latest"
-    image: "geerlingguy/docker-ubuntu1604-ansible:latest"
+  - name: "mssql-${image:-ubuntu1604}-${tag:-latest}${TOX_ENVNAME}"
+    image: "${namespace:-geerlingguy}/docker-${image:-ubuntu1604}-ansible:${tag:-latest}"
     command: /sbin/init
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro

@@ -1,0 +1,6 @@
+---
+#
+# Ansible managed
+#
+repository:
+  description: Configure SQL Server All databases backup
