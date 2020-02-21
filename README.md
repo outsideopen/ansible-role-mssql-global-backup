@@ -47,6 +47,7 @@ Available Schedule types: `once`, `daily`, `weekly`, `monthly`, `onstart`, `idle
 
     mssql_backup_cron_minute: 0
     mssql_backup_cron_hour: 2
+    mssql_backup_cron_day: *
     mssql_backup_cron_month: *
     mssql_backup_cron_weekday: *
 

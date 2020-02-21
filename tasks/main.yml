@@ -27,9 +27,10 @@
 - name: SETUP | cron job
   cron:
     name: "Clean up SQL Server backups"
-    weekday: "{{ mssql_backup_ron_weekday | default(omit) }}"
     minute: "{{ mssql_backup_cron_minute | default(omit) }}"
     hour: "{{ mssql_backup_cron_hour | default(omit) }}"
+    day: "{{ mssql_backup_cron_day | default(omit) }}"
     month: "{{ mssql_backup_cron_month | default(omit) }}"
+    weekday: "{{ mssql_backup_ron_weekday | default(omit) }}"
     user: "{{ mssql_user }}"
     job: "{{ mssql_home }}/rotate-backups.sh"
