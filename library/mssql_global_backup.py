@@ -177,7 +177,7 @@ def sqlresults(login_port, login_name, login_password, command):
         '-y0',
         '-Q',
         'SET NOCOUNT ON; %s' % command
-    ])
+    ]).decode()
 
 def sqlfile(login_port, login_name, login_password, command):
     subprocess.check_call([

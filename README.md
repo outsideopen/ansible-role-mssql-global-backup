@@ -45,9 +45,9 @@ What time to run the schedule at, default is set to 12:30 am
 
 Available Schedule types: `once`, `daily`, `weekly`, `monthly`, `onstart`, `idle`
 
-    mssql_backup_cron_hour: *
-    mssql_backup_cron_minute: *
-    mssql_backup_cron_month: 2
+    mssql_backup_cron_minute: 0
+    mssql_backup_cron_hour: 2
+    mssql_backup_cron_month: *
     mssql_backup_cron_weekday: *
 
 When should the cron job run to handle backup rotation. This is set for 2:00 am   

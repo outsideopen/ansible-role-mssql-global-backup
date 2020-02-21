@@ -16,7 +16,7 @@ mssql_schedule_interval: 1
 mssql_schedule_start_time: '003000'
 
 # ~2 hours after the backup
-mssql_backup_cron_hour: '*'
-mssql_backup_cron_minute: '*'
-mssql_backup_cron_month: 2
+mssql_backup_cron_minute: 0
+mssql_backup_cron_hour: 2
+mssql_backup_cron_month: '*'
 mssql_backup_cron_weekday: '*'
