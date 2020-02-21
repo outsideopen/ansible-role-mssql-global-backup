@@ -46,6 +46,7 @@ jobs:
       - name: molecule
         uses: robertdebock/molecule-action@2.0.0
         with:
+          namespace: geerlingguy
           image: ${{ matrix.config.image }}
           tag: ${{ matrix.config.tag }}
           options: "--parallel all"

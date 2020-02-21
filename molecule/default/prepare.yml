@@ -7,6 +7,7 @@
     - robertdebock.microsoft_repository_keys
     - role: robertdebock.mssql
       mssql_server_package: mssql-server
+      mssql_server_agent_package: mssql-server-agent
       mssql_version: 2017
       # necessary as the role hardcodes 2019
       mssql_ubuntu_repositories:
