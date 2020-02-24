@@ -276,7 +276,7 @@ class BackupJob:
             file_path = "'%s/' + @name" % path
 
         file_name = "@name"
-        if self.rotate == 0:
+        if self.rotate > 0:
             file_name = "@name + '_' + @fileDate"
 
         # the \r makes it nicely formatted in the database
