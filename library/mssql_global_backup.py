@@ -91,6 +91,11 @@ options:
             - I(master), I(model), I(msdb), I(tempdb) are always excluded, use I(include) to include them
         required: false
         type: list
+    login_server:
+        description:
+            - The TDS server address or hostname of the instance
+        required: false
+        default: localhost
     login_port:
         description:
             - The TDS port of the instance
@@ -161,11 +166,11 @@ from ansible.module_utils.basic import AnsibleModule
 import subprocess
 import os
 
-def sqlresults(login_port, login_name, login_password, command):
+def sqlresults(login_server, login_port, login_name, login_password, command):
     return subprocess.check_output([
         '/opt/mssql-tools/bin/sqlcmd',
         '-S',
-        "localhost,{0}".format(login_port),
+        "{0},{1}".format(login_server, login_port),
         '-U',
         login_name,
         '-P',
@@ -179,11 +184,11 @@ def sqlresults(login_port, login_name, login_password, command):
         'SET NOCOUNT ON; %s' % command
     ]).decode()
 
-def sqlfile(login_port, login_name, login_password, command):
+def sqlfile(login_server, login_port, login_name, login_password, command):
     subprocess.check_call([
         '/opt/mssql-tools/bin/sqlcmd',
         '-S',
-        "localhost,{0}".format(login_port),
+        "{0},{1}".format(login_server, login_port),
         '-d',
         'msdb',
         '-U',
@@ -195,11 +200,11 @@ def sqlfile(login_port, login_name, login_password, command):
         command
     ])
 
-def sqlcmd(login_port, login_name, login_password, command):
+def sqlcmd(login_server, login_port, login_name, login_password, command):
     subprocess.check_call([
         '/opt/mssql-tools/bin/sqlcmd',
         '-S',
-        "localhost,{0}".format(login_port),
+        "{0},{1}".format(login_server, login_port),
         '-d',
         'msdb',
         '-U',
@@ -222,7 +227,8 @@ def quoteName(name, quote_char):
     return "{0}{1}{2}".format(quote_start_char, name.replace(quote_end_char, quote_end_char + quote_end_char), quote_end_char)
 
 class BackupJob:
-    def __init__(self, port, user, password, name, include, exclude, per_database, rotate):
+    def __init__(self, server, port, user, password, name, include, exclude, per_database, rotate):
+        self.server = server
         self.port = port
         self.user = user
         self.password = password
@@ -237,13 +243,13 @@ class BackupJob:
         self.backup_step_name = 'ansible backup step'
 
     def result_filter(self, sql):
-        data = [i.strip() for i in sqlresults(self.port, self.user, self.password, sql).split("\n") if i]
+        data = [i.strip() for i in sqlresults(self.server, self.port, self.user, self.password, sql).split("\n") if i]
 
         return data
 
     def job_exists(self):
         sql = "SELECT name FROM dbo.sysjobs WHERE name=N'%s'" % self.job_name
-        return self.job_name in sqlresults(self.port, self.user, self.password, sql).split("\n")
+        return self.job_name in sqlresults(self.server, self.port, self.user, self.password, sql).split("\n")
 
     def job_create(self):
         sql = """
@@ -255,7 +261,7 @@ class BackupJob:
         """.format(
             quoteName(self.job_name, "'")
         )
-        sqlcmd(self.port, self.user, self.password, sql)
+        sqlcmd(self.server, self.port, self.user, self.password, sql)
 
     def backup_step_sql(self, type, path):
         # excludes: name NOT IN (excludes)
@@ -370,7 +376,7 @@ GO
         with open(path.name, 'w+') as file:
             file.write(sql)
 
-        sqlfile(self.port, self.user, self.password, path.name)
+        sqlfile(self.server, self.port, self.user, self.password, path.name)
         os.unlink(path.name)
 
 
@@ -419,7 +425,7 @@ GO
             interval,
             start_time
         )
-        sqlcmd(self.port, self.user, self.password, sql)
+        sqlcmd(self.server, self.port, self.user, self.password, sql)
 
         return self.schedule_exists(type, interval, start_time)
 
@@ -439,7 +445,7 @@ GO
         return len(self.attach_results) > 0
 
     def schedule_attach(self):
-        sqlcmd(self.port, self.user, self.password,"""
+        sqlcmd(self.server, self.port, self.user, self.password,"""
             EXEC sp_attach_schedule @job_name = {0}, @schedule_name = {1};
             EXEC sp_add_jobserver @job_name = {0}, @server_name=N'(LOCAL)';
         """.format(
@@ -482,6 +488,7 @@ def main():
             schedule_start_time = dict(default = '000000'),
 
             # login properties
+            login_server   = dict(required = False, default = 'localhost'),
             login_port     = dict(type='int', required = False, default = 1433),
             login_name     = dict(required = True),
             login_password = dict(required = True, no_log = True)
@@ -492,6 +499,7 @@ def main():
     )
 
     backup = BackupJob(
+        module.params['login_server'],
         module.params['login_port'],
         module.params['login_name'],
         module.params['login_password'],
