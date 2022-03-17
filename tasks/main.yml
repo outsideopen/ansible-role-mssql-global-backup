@@ -14,6 +14,7 @@
     schedule_type: "{{ mssql_schedule_type | default(omit) }}"
     schedule_interval: "{{ mssql_schedule_interval | default(omit) }}"
     schedule_start_time: "{{ mssql_schedule_start_time | default(omit) }}"
+    login_server: "{{ mssql_server | string }}"
     login_port: "{{ mssql_port | string }}"
     login_name: "{{ mssql_admin_user }}"
     login_password: "{{ mssql_admin_password }}"
